@@ -1,0 +1,6 @@
+# Copy to "Caddyfile", replace the domain, and enable the caddy service in docker-compose.yml.
+# Caddy fetches and renews a Let's Encrypt certificate automatically.
+fuel.example.com {
+	encode zstd gzip
+	reverse_proxy app:3000
+}

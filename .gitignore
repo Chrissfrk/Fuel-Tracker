@@ -1,0 +1,11 @@
+node_modules
+dist
+.data
+*.db
+*.db-*
+.env
+test-results
+playwright-report
+coverage
+.DS_Store
+.e2e-data

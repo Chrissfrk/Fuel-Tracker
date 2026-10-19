@@ -1,0 +1,8 @@
+dist
+node_modules
+apps/server/drizzle
+package-lock.json
+.data
+.e2e-data
+test-results
+apps/web/public

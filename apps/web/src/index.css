@@ -1,0 +1,395 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------
+   Design tokens (iOS system colors). Light is the default; dark follows
+   the system unless overridden with <html data-theme="light|dark">.
+   ------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  --bg: #f2f2f7;
+  --surface: #ffffff;
+  --surface-2: #f2f2f7;
+  --surface-3: #e5e5ea;
+  --elevated: #ffffff;
+  --segment-thumb: #ffffff;
+  --label: #000000;
+  --label-2: rgba(60, 60, 67, 0.64);
+  --label-3: rgba(60, 60, 67, 0.36);
+  --separator: rgba(60, 60, 67, 0.22);
+  --fill: rgba(120, 120, 128, 0.12);
+  --fill-2: rgba(120, 120, 128, 0.2);
+  --accent: #007aff;
+  --accent-text: #0066d6;
+  --on-accent: #ffffff;
+  --green: #34c759;
+  --green-text: #1f8a3b;
+  --orange: #ff9500;
+  --orange-text: #b35c00;
+  --red: #ff3b30;
+  --red-text: #d70015;
+  --scrim: rgba(0, 0, 0, 0.32);
+  --bar: rgba(249, 249, 251, 0.78);
+  --bar-solid: #f9f9fb;
+  --bar-edge: rgba(0, 0, 0, 0.14);
+  --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --grid: rgba(60, 60, 67, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --surface-2: #2c2c2e;
+    --surface-3: #3a3a3c;
+    --elevated: #2c2c2e;
+    --segment-thumb: #636366;
+    --label: #ffffff;
+    --label-2: rgba(235, 235, 245, 0.64);
+    --label-3: rgba(235, 235, 245, 0.34);
+    --separator: rgba(84, 84, 88, 0.6);
+    --fill: rgba(118, 118, 128, 0.24);
+    --fill-2: rgba(118, 118, 128, 0.32);
+    --accent: #0a84ff;
+    --accent-text: #409cff;
+    --green: #30d158;
+    --green-text: #30d158;
+    --orange: #ff9f0a;
+    --orange-text: #ffb340;
+    --red: #ff453a;
+    --red-text: #ff6961;
+    --scrim: rgba(0, 0, 0, 0.5);
+    --bar: rgba(22, 22, 24, 0.76);
+    --bar-solid: #161618;
+    --bar-edge: rgba(255, 255, 255, 0.12);
+    --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.5);
+    --shadow-card: none;
+    --grid: rgba(235, 235, 245, 0.1);
+  }
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface-2: #2c2c2e;
+  --surface-3: #3a3a3c;
+  --elevated: #2c2c2e;
+  --segment-thumb: #636366;
+  --label: #ffffff;
+  --label-2: rgba(235, 235, 245, 0.64);
+  --label-3: rgba(235, 235, 245, 0.34);
+  --separator: rgba(84, 84, 88, 0.6);
+  --fill: rgba(118, 118, 128, 0.24);
+  --fill-2: rgba(118, 118, 128, 0.32);
+  --accent: #0a84ff;
+  --accent-text: #409cff;
+  --green: #30d158;
+  --green-text: #30d158;
+  --orange: #ff9f0a;
+  --orange-text: #ffb340;
+  --red: #ff453a;
+  --red-text: #ff6961;
+  --scrim: rgba(0, 0, 0, 0.5);
+  --bar: rgba(22, 22, 24, 0.76);
+  --bar-solid: #161618;
+  --bar-edge: rgba(255, 255, 255, 0.12);
+  --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.5);
+  --shadow-card: none;
+  --grid: rgba(235, 235, 245, 0.1);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-elevated: var(--elevated);
+  --color-segment-thumb: var(--segment-thumb);
+  --color-label: var(--label);
+  --color-label-2: var(--label-2);
+  --color-label-3: var(--label-3);
+  --color-separator: var(--separator);
+  --color-fill: var(--fill);
+  --color-fill-2: var(--fill-2);
+  --color-accent: var(--accent);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+  --color-green: var(--green);
+  --color-green-text: var(--green-text);
+  --color-orange: var(--orange);
+  --color-orange-text: var(--orange-text);
+  --color-red: var(--red);
+  --color-red-text: var(--red-text);
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue',
+    sans-serif;
+  --font-display:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue',
+    sans-serif;
+}
+
+/* Base element styles live in the base layer so Tailwind utilities can override them. */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    background: var(--bg);
+    transition: background-color 250ms ease;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--bg);
+    color: var(--label);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem; /* 17px body, iOS default */
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    font-feature-settings: 'tnum' 0;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+    font-synthesis-weight: none;
+  }
+  #root {
+    min-height: 100dvh;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em); /* prevent iOS zoom on focus */
+  }
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Type scale (size-specific tracking & leading)
+   ------------------------------------------------------------------ */
+@utility text-large-title {
+  font-family: var(--font-display);
+  font-size: 2.125rem;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.022em;
+}
+@utility text-title-1 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+@utility text-title-2 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.016em;
+}
+@utility text-title-3 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+}
+@utility text-headline {
+  font-size: 1.0625rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+@utility text-body {
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+@utility text-callout {
+  font-size: 1rem;
+  line-height: 1.35;
+  letter-spacing: -0.008em;
+}
+@utility text-subhead {
+  font-size: 0.9375rem;
+  line-height: 1.33;
+  letter-spacing: -0.006em;
+}
+@utility text-footnote {
+  font-size: 0.8125rem;
+  line-height: 1.38;
+  letter-spacing: 0;
+}
+@utility text-caption {
+  font-size: 0.75rem;
+  line-height: 1.33;
+  letter-spacing: 0.005em;
+}
+@utility text-caption-2 {
+  font-size: 0.6875rem;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+/* ------------------------------------------------------------------
+   Materials
+   ------------------------------------------------------------------ */
+@utility material-bar {
+  background: var(--bar);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .material-bar {
+    background: var(--bar-solid);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .material-bar {
+    background: var(--bar-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .material-bar {
+    background: var(--bar-solid);
+    border-color: var(--label-3) !important;
+  }
+}
+
+@layer components {
+  .pressable {
+    transition:
+      transform 120ms ease-out,
+      opacity 120ms ease-out,
+      background-color 120ms ease-out;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .pressable:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+  .row-press {
+    transition: background-color 80ms ease-out;
+    touch-action: manipulation;
+  }
+  .row-press:active {
+    background-color: var(--fill);
+  }
+  .hairline-b {
+    box-shadow: inset 0 -0.5px 0 var(--separator);
+  }
+
+  .list-group > * + * .row-inner {
+    border-top: 0.5px solid var(--separator);
+  }
+
+  .field-input {
+    width: 100%;
+    min-height: 44px;
+    background: transparent;
+    border: 0;
+    outline: none;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .field-input::placeholder {
+    color: var(--label-3);
+  }
+  .field-input:focus-visible {
+    outline: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+}
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+/* Save confirmation burst */
+@keyframes pop-in {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: 30;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.pop-in {
+  animation: pop-in 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.draw-check {
+  stroke-dasharray: 30;
+  animation: draw 300ms 160ms ease-out both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fade-in 200ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pressable:active {
+    transform: none;
+  }
+  .spin {
+    animation: spin 1.6s linear infinite !important;
+  }
+}
