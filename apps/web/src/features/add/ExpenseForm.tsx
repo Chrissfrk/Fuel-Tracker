@@ -125,15 +125,19 @@ export const ExpenseForm = forwardRef<FormHandle, FormProps<Expense>>(function E
                     haptic();
                     touch(setCategory)(c);
                   }}
-                  className={`pressable flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl px-0.5 ${
+                  className="pressable flex min-h-[68px] flex-col items-center justify-center gap-1 rounded-xl px-0.5 transition-[background-color,box-shadow] duration-150"
+                  style={
                     on
-                      ? 'bg-[color-mix(in_srgb,var(--accent)_14%,transparent)] ring-2 ring-accent'
-                      : ''
-                  }`}
+                      ? {
+                          background: `color-mix(in srgb, ${m.color} var(--soft-mix), transparent)`,
+                          boxShadow: `inset 0 0 0 2px ${m.color}`,
+                        }
+                      : undefined
+                  }
                 >
                   <IconTile name={m.icon} color={m.color} size={34} />
                   <span
-                    className={`w-full truncate text-center text-caption ${on ? 'font-semibold text-accent-text' : 'text-label-2'}`}
+                    className={`w-full truncate text-center text-caption ${on ? 'font-semibold text-label' : 'text-label-2'}`}
                   >
                     {m.label}
                   </span>

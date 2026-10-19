@@ -15,9 +15,10 @@ import { CarSwitcher } from '../../components/ui/CarSwitcher';
 import { Segmented } from '../../components/ui/Controls';
 import { Delta, StatCard } from '../../components/ui/Stats';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Icon, type IconName } from '../../components/ui/Icon';
+import { hueStyle, TONE, type Hue } from '../../lib/palette';
 import { useCarSelection } from '../../app/context';
 import { useCars, useExpenses, useFillups } from '../../data/hooks';
-import { carColor, SERIES_LIGHT } from '../../lib/theme';
 import { useStats, type Range } from './useStats';
 import {
   CategoryDoughnut,
@@ -42,21 +43,28 @@ function ChartCard({
   children,
   height = 220,
   empty,
+  icon,
+  tone,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
   height?: number;
   empty?: boolean;
+  icon: IconName;
+  tone: Hue;
 }) {
   return (
-    <section
-      className="mt-4 rounded-2xl bg-surface p-4"
-      aria-label={title}
-      style={{ boxShadow: 'var(--shadow-card)' }}
-    >
-      <h2 className="text-headline">{title}</h2>
-      {subtitle && <p className="text-footnote text-label-2">{subtitle}</p>}
+    <section className="tone-card mt-4 rounded-2xl p-4" aria-label={title} style={hueStyle(tone)}>
+      <div className="flex items-start gap-2.5">
+        <span className="tone-icon mt-0.5 h-8 w-8 rounded-[9px]">
+          <Icon name={icon} size={18} strokeWidth={2.1} />
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-headline">{title}</h2>
+          {subtitle && <p className="text-footnote text-label-2">{subtitle}</p>}
+        </div>
+      </div>
       {empty ? (
         <p className="py-10 text-center text-subhead text-label-2">
           Not enough data in this range yet.
@@ -84,9 +92,6 @@ export default function StatsPage() {
   const expenses = useExpenses(carIds);
   const [range, setRange] = useState<Range>('1y');
   const s = useStats(selectedCars, fillups, expenses, range);
-  const isAll = selection === 'all';
-  const single = !isAll ? selectedCars[0] : undefined;
-  const seasonalColor = single ? carColor(single, allCars.indexOf(single)) : SERIES_LIGHT[0];
 
   if (cars.length === 0 || selection == null) {
     return (
@@ -129,6 +134,8 @@ export default function StatsPage() {
             <ChartCard
               title="Fuel economy"
               subtitle="L/100 km for each full tank, with a 5-tank rolling average"
+              icon="gauge"
+              tone={TONE.economy}
               empty={s.economy.length === 0}
             >
               <EconomyChart points={s.economy} cars={selectedCars} allCars={allCars} />
@@ -136,6 +143,8 @@ export default function StatsPage() {
             <ChartCard
               title="Price per liter"
               subtitle="Each fill-up"
+              icon="euro"
+              tone={TONE.price}
               empty={s.prices.length === 0}
             >
               <PriceChart prices={s.prices} cars={selectedCars} allCars={allCars} />
@@ -143,6 +152,8 @@ export default function StatsPage() {
             <ChartCard
               title="Monthly spending"
               subtitle="Fuel and other expenses"
+              icon="wallet"
+              tone={TONE.cost}
               empty={s.spend.every(
                 (r) => r.fuel === 0 && r.maintenance + r.fees + r.driving + r.other === 0,
               )}
@@ -150,27 +161,45 @@ export default function StatsPage() {
             >
               <SpendChart rows={s.spend} />
             </ChartCard>
-            <ChartCard title="Distance per month" empty={s.kmByCar.every((r) => r.total === 0)}>
+            <ChartCard
+              title="Distance per month"
+              icon="road"
+              tone={TONE.distance}
+              empty={s.kmByCar.every((r) => r.total === 0)}
+            >
               <KmChart rows={s.kmByCar} cars={selectedCars} allCars={allCars} />
             </ChartCard>
             <ChartCard
               title="Seasonal economy"
               subtitle="Average L/100 km by calendar month, all years — A/C shows up in summer"
+              icon="sun"
+              tone={TONE.economy}
               empty={s.seasonal.every((p) => p.l100 == null)}
             >
-              <SeasonalChart points={s.seasonal} color={seasonalColor} />
+              <SeasonalChart points={s.seasonal} />
             </ChartCard>
             <ChartCard
               title="Stations"
               subtitle="Average price per liter (cheapest first)"
+              icon="fuel"
+              tone={TONE.price}
               empty={s.stations.length === 0}
               height={Math.max(140, s.stations.length * 34)}
             >
               <StationChart stations={s.stations} />
             </ChartCard>
           </div>
-          <section className="mt-4 rounded-2xl bg-surface p-4" aria-label="Spending by category">
-            <h2 className="mb-3 text-headline">Spending by category</h2>
+          <section
+            className="tone-card mt-4 rounded-2xl p-4"
+            style={hueStyle(TONE.cost)}
+            aria-label="Spending by category"
+          >
+            <div className="mb-3 flex items-center gap-2.5">
+              <span className="tone-icon h-8 w-8 rounded-[9px]">
+                <Icon name="receipt" size={18} strokeWidth={2.1} />
+              </span>
+              <h2 className="text-headline">Spending by category</h2>
+            </div>
             <CategoryDoughnut totals={s.categoryTotals} />
           </section>
 
@@ -180,20 +209,28 @@ export default function StatsPage() {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 [&>*]:min-w-0">
             <StatCard
               label="Distance"
+              icon="road"
+              tone={TONE.distance}
               value={formatKm(s.allTime.km)}
               sub={s.allTime.firstDate ? `since ${formatDate(s.allTime.firstDate)}` : undefined}
             />
             <StatCard
               label="Total spent"
+              icon="wallet"
+              tone={TONE.cost}
               value={formatCurrency(s.allTime.totalCost, { whole: true })}
               sub={`${formatCurrency(s.allTime.fuelCost, { whole: true })} fuel`}
             />
             <StatCard
               label="Other expenses"
+              icon="wrench"
+              tone={TONE.cost}
               value={formatCurrency(s.allTime.expensesTotal, { whole: true })}
             />
             <StatCard
               label="Average economy"
+              icon="gauge"
+              tone={TONE.economy}
               value={formatL100(s.allTime.l100)}
               sub={
                 s.allTime.kmPerL
@@ -203,16 +240,22 @@ export default function StatsPage() {
             />
             <StatCard
               label="Best tank"
+              icon="sparkle"
+              tone={TONE.economy}
               value={formatL100(s.allTime.bestSegment?.l100)}
               sub={s.allTime.bestSegment ? formatDate(s.allTime.bestSegment.endDate) : undefined}
             />
             <StatCard
               label="Worst tank"
+              icon="arrowUp"
+              tone={TONE.economy}
               value={formatL100(s.allTime.worstSegment?.l100)}
               sub={s.allTime.worstSegment ? formatDate(s.allTime.worstSegment.endDate) : undefined}
             />
             <StatCard
               label="Cheapest fuel"
+              icon="arrowDown"
+              tone={TONE.price}
               value={formatPricePerLiter(s.allTime.cheapestFill?.pricePerLiter)}
               sub={
                 s.allTime.cheapestFill
@@ -224,6 +267,8 @@ export default function StatsPage() {
             />
             <StatCard
               label="Priciest fuel"
+              icon="arrowUp"
+              tone={TONE.price}
               value={formatPricePerLiter(s.allTime.priciestFill?.pricePerLiter)}
               sub={
                 s.allTime.priciestFill
@@ -235,20 +280,31 @@ export default function StatsPage() {
             />
             <StatCard
               label="Per month"
+              icon="calendar"
+              tone={TONE.cost}
               value={formatCurrency(s.allTime.avgMonthlySpend, { whole: true })}
               sub="average spend"
             />
             <StatCard
               label="True cost / km"
+              icon="wallet"
+              tone={TONE.cost}
               value={formatCostPerKm(s.allTime.trueCostPerKm)}
               sub="fuel + expenses"
             />
             <StatCard
               label="Fuel bought"
+              icon="fuel"
+              tone={TONE.fuel}
               value={formatLiters(Math.round(s.allTime.liters))}
               sub={`${s.allTime.fillupCount} fill-ups`}
             />
-            <StatCard label="Avg price" value={formatPricePerLiter(s.allTime.avgPricePerLiter)} />
+            <StatCard
+              label="Avg price"
+              icon="euro"
+              tone={TONE.price}
+              value={formatPricePerLiter(s.allTime.avgPricePerLiter)}
+            />
           </div>
         </>
       )}
@@ -262,7 +318,10 @@ function MonthlyTable({ rows }: { rows: ReturnType<typeof useStats>['table'] }) 
       <h2 id="monthly-h" className="mb-2 px-1 text-title-3">
         Month by month
       </h2>
-      <div className="overflow-x-auto rounded-2xl bg-surface">
+      <div
+        className="overflow-x-auto rounded-2xl bg-surface"
+        style={{ boxShadow: 'var(--shadow-card)' }}
+      >
         <table className="w-full min-w-[760px] text-subhead tabular">
           <thead className="text-left text-footnote text-label-2">
             <tr>

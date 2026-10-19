@@ -16,12 +16,16 @@ import {
   type SeasonalPoint,
 } from '@fuel/shared';
 import {
+  areaFill,
   baseOptions,
   barEndLabels,
   crosshair,
+  SPEND_SLOTS,
   useChartTheme,
+  withAlpha,
   type ChartTheme,
   type LooseOptions,
+  type Metric,
 } from './chartSetup';
 import { carColor } from '../../lib/theme';
 
@@ -49,7 +53,12 @@ function timeScales(
   };
 }
 
-function colorsFor(cars: Car[], allCars: Car[], t: ChartTheme) {
+/**
+ * Several cars: each car keeps its identity colour. One car: the series is the measure itself,
+ * so it takes the measure's colour (the same hue as its card and icon elsewhere).
+ */
+function colorsFor(cars: Car[], allCars: Car[], t: ChartTheme, metric: Metric) {
+  if (cars.length === 1) return new Map([[cars[0]!.id, t.metric(metric)]]);
   return new Map(cars.map((c) => [c.id, t.car(carColor(c, allCars.indexOf(c)))]));
 }
 
@@ -65,7 +74,8 @@ export function EconomyChart({
   allCars: Car[];
 }) {
   const t = useChartTheme();
-  const colors = colorsFor(cars, allCars, t);
+  const colors = colorsFor(cars, allCars, t, 'economy');
+  const single = cars.length === 1;
   const datasets = cars.flatMap((c) => {
     const pts = points.filter((p) => p.segment.carId === c.id);
     if (pts.length === 0) return [];
@@ -75,7 +85,7 @@ export function EconomyChart({
         label: cars.length > 1 ? `${c.name} · each tank` : 'Each tank',
         data: pts.map((p) => ({ x: ts(p.segment.endDate), y: p.segment.l100! })),
         borderColor: 'transparent',
-        backgroundColor: color,
+        backgroundColor: single ? withAlpha(color, 0.6) : color,
         pointRadius: 4,
         pointHoverRadius: 6,
         pointBorderColor: t.surface,
@@ -86,7 +96,8 @@ export function EconomyChart({
         label: cars.length > 1 ? `${c.name} · 5-tank average` : '5-tank average',
         data: pts.map((p) => ({ x: ts(p.segment.endDate), y: p.rollingL100 })),
         borderColor: color,
-        backgroundColor: color,
+        backgroundColor: single ? areaFill(color, t.dark ? 0.32 : 0.22) : color,
+        fill: single ? 'start' : false,
         borderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 0,
@@ -117,13 +128,16 @@ export function PriceChart({
   allCars: Car[];
 }) {
   const t = useChartTheme();
-  const colors = colorsFor(cars, allCars, t);
+  const colors = colorsFor(cars, allCars, t, 'price');
+  const single = cars.length === 1;
   const datasets = cars
     .map((c) => ({
       label: c.name,
       data: prices.filter((p) => p.carId === c.id).map((p) => ({ x: ts(p.date), y: p.ppl })),
       borderColor: colors.get(c.id),
-      backgroundColor: colors.get(c.id),
+      backgroundColor: single ? areaFill(colors.get(c.id)!, t.dark ? 0.32 : 0.2) : colors.get(c.id),
+      pointBackgroundColor: colors.get(c.id),
+      fill: single ? 'start' : false,
       borderWidth: 2,
       pointRadius: 2.5,
       pointHoverRadius: 5,
@@ -158,7 +172,7 @@ export function SpendChart({ rows }: { rows: SpendRow[] }) {
     .map((s, i) => ({
       label: s.label,
       data: rows.map((r) => r[s.key as keyof SpendRow] as number),
-      backgroundColor: t.slot(i),
+      backgroundColor: t.slot(SPEND_SLOTS[i]!),
       borderColor: t.surface,
       borderWidth: { top: 2 },
       borderRadius: 4,
@@ -207,7 +221,7 @@ export function KmChart({
   allCars: Car[];
 }) {
   const t = useChartTheme();
-  const colors = colorsFor(cars, allCars, t);
+  const colors = colorsFor(cars, allCars, t, 'distance');
   const datasets = cars.map((c) => ({
     label: c.name,
     data: rows.map((r) => r.perCar[c.id] ?? 0),
@@ -246,7 +260,7 @@ export function KmChart({
 
 // ---------- Seasonal L/100 km ----------
 
-export function SeasonalChart({ points, color }: { points: SeasonalPoint[]; color: string }) {
+export function SeasonalChart({ points }: { points: SeasonalPoint[] }) {
   const t = useChartTheme();
   const options = baseOptions(t);
   const known = points.map((p) => p.l100).filter((v): v is number => v != null);
@@ -274,7 +288,7 @@ export function SeasonalChart({ points, color }: { points: SeasonalPoint[]; colo
           {
             label: 'L/100 km',
             data: points.map((p) => p.l100),
-            backgroundColor: t.car(color),
+            backgroundColor: t.metric('economy'),
             borderRadius: 4,
             borderSkipped: 'start',
             maxBarThickness: 22,
@@ -299,7 +313,7 @@ export function CategoryDoughnut({
     ...EXPENSE_GROUPS.map((g) => ({ key: g.key, label: g.label })),
   ];
   const rows = series
-    .map((s, i) => ({ ...s, value: totals[s.key] ?? 0, color: t.slot(i) }))
+    .map((s, i) => ({ ...s, value: totals[s.key] ?? 0, color: t.slot(SPEND_SLOTS[i]!) }))
     .filter((r) => r.value > 0);
   const total = rows.reduce((s, r) => s + r.value, 0);
   return (
@@ -402,7 +416,10 @@ export function StationChart({ stations }: { stations: GroupStats[] }) {
           {
             label: 'Average €/L',
             data: values,
-            backgroundColor: t.slot(0),
+            // Cheapest first and at full strength; the rest step back.
+            backgroundColor: values.map((_, i) =>
+              i === 0 ? t.metric('price') : withAlpha(t.metric('price'), 0.55),
+            ),
             borderRadius: 4,
             borderSkipped: 'start',
             barThickness: 18,

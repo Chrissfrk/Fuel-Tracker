@@ -1,102 +1,195 @@
 @import 'tailwindcss';
 
 /* ------------------------------------------------------------------
-   Design tokens (iOS system colors). Light is the default; dark follows
-   the system unless overridden with <html data-theme="light|dark">.
+   Design tokens. Light is the default; dark follows the system unless
+   overridden with <html data-theme="light|dark">.
+
+   Neutrals carry a faint cool tint so surfaces read as one family. Colour
+   comes from a fixed set of hues (iOS system colours), each with a fill step
+   for icons/marks and a text step that meets WCAG AA on surfaces and on its
+   own soft tint. Meaning is mapped onto hues once (tones, see lib/palette.ts):
+   fuel = orange, distance = blue, economy = teal, price = indigo,
+   cost = pink, odometer = cyan. Status keeps green / orange / red.
    ------------------------------------------------------------------ */
 :root {
   color-scheme: light;
-  --bg: #f2f2f7;
+  --bg: #f1f3f8;
   --surface: #ffffff;
-  --surface-2: #f2f2f7;
-  --surface-3: #e5e5ea;
+  --surface-2: #f1f3f8;
+  --surface-3: #e3e6ee;
   --elevated: #ffffff;
+  --sheet-bg: #f1f3f8;
+  --sheet-surface: #ffffff;
   --segment-thumb: #ffffff;
-  --label: #000000;
-  --label-2: rgba(60, 60, 67, 0.64);
-  --label-3: rgba(60, 60, 67, 0.36);
-  --separator: rgba(60, 60, 67, 0.22);
-  --fill: rgba(120, 120, 128, 0.12);
-  --fill-2: rgba(120, 120, 128, 0.2);
+  --label: #0b0d12;
+  --label-2: rgba(60, 60, 67, 0.72);
+  --label-3: rgba(60, 60, 67, 0.4);
+  --separator: rgba(60, 64, 82, 0.2);
+  --fill: rgba(118, 124, 145, 0.13);
+  --fill-2: rgba(118, 124, 145, 0.22);
   --accent: #007aff;
-  --accent-text: #0066d6;
+  --accent-text: #005ec4;
   --on-accent: #ffffff;
-  --green: #34c759;
-  --green-text: #1f8a3b;
-  --orange: #ff9500;
-  --orange-text: #b35c00;
+
+  /* Hues: a fill/icon step and an AA text step (>= 4.5:1 on surfaces and on soft tints). */
+  --blue: #007aff;
+  --blue-text: #005ec4;
+  --indigo: #5856d6;
+  --indigo-text: #4846c0;
+  --purple: #af52de;
+  --purple-text: #8e3bbd;
+  --pink: #ff2d55;
+  --pink-text: #c4103f;
   --red: #ff3b30;
-  --red-text: #d70015;
-  --scrim: rgba(0, 0, 0, 0.32);
-  --bar: rgba(249, 249, 251, 0.78);
-  --bar-solid: #f9f9fb;
-  --bar-edge: rgba(0, 0, 0, 0.14);
-  --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.12);
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --grid: rgba(60, 60, 67, 0.12);
+  --red-text: #cc0014;
+  --orange: #ff9500;
+  --orange-text: #a35300;
+  --yellow: #ffcc00;
+  --yellow-text: #856400;
+  --green: #34c759;
+  --green-text: #1a7a34;
+  --teal: #30b0c7;
+  --teal-text: #09707f;
+  --cyan: #32ade6;
+  --cyan-text: #0a6896;
+  --brown: #a2845e;
+  --brown-text: #7d6446;
+  --gray: #8e8e93;
+  --gray-text: #636366;
+
+  /* How strongly hues tint backgrounds. */
+  --soft-mix: 14%;
+  --card-tint: 7%;
+  --hero-tint: 16%;
+  --card-edge: 0%;
+  --glow-mix: 17%;
+  --glow-mix-2: 9%;
+
+  --scrim: rgba(10, 14, 24, 0.3);
+  --bar: rgba(248, 249, 252, 0.76);
+  --bar-solid: #f8f9fc;
+  --bar-edge: rgba(20, 30, 60, 0.12);
+  --shadow-sheet: 0 -2px 24px rgba(20, 30, 60, 0.12);
+  --shadow-card: 0 1px 2px rgba(20, 30, 60, 0.04), 0 4px 16px -6px rgba(20, 30, 60, 0.08);
+  --shadow-pop: 0 10px 40px rgba(20, 30, 60, 0.18);
+  --grid: rgba(60, 64, 82, 0.12);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --bg: #000000;
-    --surface: #1c1c1e;
-    --surface-2: #2c2c2e;
-    --surface-3: #3a3a3c;
-    --elevated: #2c2c2e;
-    --segment-thumb: #636366;
-    --label: #ffffff;
-    --label-2: rgba(235, 235, 245, 0.64);
-    --label-3: rgba(235, 235, 245, 0.34);
-    --separator: rgba(84, 84, 88, 0.6);
-    --fill: rgba(118, 118, 128, 0.24);
-    --fill-2: rgba(118, 118, 128, 0.32);
+    --bg: #141821;
+    --surface: #20252f;
+    --surface-2: #2b313d;
+    --surface-3: #394050;
+    --elevated: #2a303c;
+    --sheet-bg: #191d26;
+    --sheet-surface: #272c38;
+    --segment-thumb: #535b6c;
+    --label: #f5f7fb;
+    --label-2: rgba(228, 233, 246, 0.68);
+    --label-3: rgba(228, 233, 246, 0.36);
+    --separator: rgba(150, 160, 185, 0.22);
+    --fill: rgba(140, 150, 175, 0.2);
+    --fill-2: rgba(140, 150, 175, 0.3);
     --accent: #0a84ff;
-    --accent-text: #409cff;
-    --green: #30d158;
-    --green-text: #30d158;
-    --orange: #ff9f0a;
-    --orange-text: #ffb340;
+    --accent-text: #5aa9ff;
+    --blue: #0a84ff;
+    --blue-text: #5aa9ff;
+    --indigo: #5e5ce6;
+    --indigo-text: #9e9cff;
+    --purple: #bf5af2;
+    --purple-text: #d58cf7;
+    --pink: #ff375f;
+    --pink-text: #ff7a93;
     --red: #ff453a;
     --red-text: #ff6961;
-    --scrim: rgba(0, 0, 0, 0.5);
-    --bar: rgba(22, 22, 24, 0.76);
-    --bar-solid: #161618;
-    --bar-edge: rgba(255, 255, 255, 0.12);
-    --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.5);
-    --shadow-card: none;
-    --grid: rgba(235, 235, 245, 0.1);
+    --orange: #ff9f0a;
+    --orange-text: #ffb340;
+    --yellow: #ffd60a;
+    --yellow-text: #ffd60a;
+    --green: #30d158;
+    --green-text: #4fdc72;
+    --teal: #40c8e0;
+    --teal-text: #6bd6ea;
+    --cyan: #64d2ff;
+    --cyan-text: #7fdcff;
+    --brown: #ac8e68;
+    --brown-text: #c8a882;
+    --gray: #8e8e98;
+    --gray-text: #aeaeb6;
+    --soft-mix: 22%;
+    --card-tint: 13%;
+    --hero-tint: 26%;
+    --card-edge: 22%;
+    --glow-mix: 30%;
+    --glow-mix-2: 16%;
+    --scrim: rgba(4, 6, 12, 0.5);
+    --bar: rgba(26, 30, 40, 0.76);
+    --bar-solid: #1a1e28;
+    --bar-edge: rgba(255, 255, 255, 0.1);
+    --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.45);
+    --shadow-card: inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
+    --shadow-pop: 0 12px 44px rgba(0, 0, 0, 0.55);
+    --grid: rgba(228, 233, 246, 0.1);
   }
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #000000;
-  --surface: #1c1c1e;
-  --surface-2: #2c2c2e;
-  --surface-3: #3a3a3c;
-  --elevated: #2c2c2e;
-  --segment-thumb: #636366;
-  --label: #ffffff;
-  --label-2: rgba(235, 235, 245, 0.64);
-  --label-3: rgba(235, 235, 245, 0.34);
-  --separator: rgba(84, 84, 88, 0.6);
-  --fill: rgba(118, 118, 128, 0.24);
-  --fill-2: rgba(118, 118, 128, 0.32);
+  --bg: #141821;
+  --surface: #20252f;
+  --surface-2: #2b313d;
+  --surface-3: #394050;
+  --elevated: #2a303c;
+  --sheet-bg: #191d26;
+  --sheet-surface: #272c38;
+  --segment-thumb: #535b6c;
+  --label: #f5f7fb;
+  --label-2: rgba(228, 233, 246, 0.68);
+  --label-3: rgba(228, 233, 246, 0.36);
+  --separator: rgba(150, 160, 185, 0.22);
+  --fill: rgba(140, 150, 175, 0.2);
+  --fill-2: rgba(140, 150, 175, 0.3);
   --accent: #0a84ff;
-  --accent-text: #409cff;
-  --green: #30d158;
-  --green-text: #30d158;
-  --orange: #ff9f0a;
-  --orange-text: #ffb340;
+  --accent-text: #5aa9ff;
+  --blue: #0a84ff;
+  --blue-text: #5aa9ff;
+  --indigo: #5e5ce6;
+  --indigo-text: #9e9cff;
+  --purple: #bf5af2;
+  --purple-text: #d58cf7;
+  --pink: #ff375f;
+  --pink-text: #ff7a93;
   --red: #ff453a;
   --red-text: #ff6961;
-  --scrim: rgba(0, 0, 0, 0.5);
-  --bar: rgba(22, 22, 24, 0.76);
-  --bar-solid: #161618;
-  --bar-edge: rgba(255, 255, 255, 0.12);
-  --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.5);
-  --shadow-card: none;
-  --grid: rgba(235, 235, 245, 0.1);
+  --orange: #ff9f0a;
+  --orange-text: #ffb340;
+  --yellow: #ffd60a;
+  --yellow-text: #ffd60a;
+  --green: #30d158;
+  --green-text: #4fdc72;
+  --teal: #40c8e0;
+  --teal-text: #6bd6ea;
+  --cyan: #64d2ff;
+  --cyan-text: #7fdcff;
+  --brown: #ac8e68;
+  --brown-text: #c8a882;
+  --gray: #8e8e98;
+  --gray-text: #aeaeb6;
+  --soft-mix: 22%;
+  --card-tint: 13%;
+  --hero-tint: 26%;
+  --card-edge: 22%;
+  --glow-mix: 30%;
+  --glow-mix-2: 16%;
+  --scrim: rgba(4, 6, 12, 0.5);
+  --bar: rgba(26, 30, 40, 0.76);
+  --bar-solid: #1a1e28;
+  --bar-edge: rgba(255, 255, 255, 0.1);
+  --shadow-sheet: 0 -2px 24px rgba(0, 0, 0, 0.45);
+  --shadow-card: inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
+  --shadow-pop: 0 12px 44px rgba(0, 0, 0, 0.55);
+  --grid: rgba(228, 233, 246, 0.1);
 }
 
 @theme inline {
@@ -121,6 +214,16 @@
   --color-orange-text: var(--orange-text);
   --color-red: var(--red);
   --color-red-text: var(--red-text);
+  --color-blue-text: var(--blue-text);
+  --color-indigo-text: var(--indigo-text);
+  --color-purple-text: var(--purple-text);
+  --color-pink-text: var(--pink-text);
+  --color-teal-text: var(--teal-text);
+  --color-cyan-text: var(--cyan-text);
+  --color-accent-soft: color-mix(in srgb, var(--accent) var(--soft-mix), transparent);
+  --color-green-soft: color-mix(in srgb, var(--green) var(--soft-mix), transparent);
+  --color-orange-soft: color-mix(in srgb, var(--orange) var(--soft-mix), transparent);
+  --color-red-soft: color-mix(in srgb, var(--red) var(--soft-mix), transparent);
   --font-sans:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue',
     sans-serif;
@@ -269,6 +372,13 @@
     background: var(--bar-solid);
     border-color: var(--label-3) !important;
   }
+  .tone-card {
+    background: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--label-3);
+  }
+  .page-glow {
+    display: none;
+  }
 }
 
 @layer components {
@@ -289,8 +399,81 @@
     transition: background-color 80ms ease-out;
     touch-action: manipulation;
   }
+  @media (hover: hover) {
+    .row-press:hover {
+      background-color: color-mix(in srgb, var(--accent) 5%, transparent);
+    }
+  }
   .row-press:active {
-    background-color: var(--fill);
+    background-color: color-mix(in srgb, var(--accent) 12%, var(--fill));
+  }
+
+  /* A card tinted by its tone (--h): a soft wash from the top-left corner that fades into the
+     surface, plus a faint coloured edge in dark mode. Text stays in label colours. */
+  .tone-card {
+    --h: var(--accent);
+    background: linear-gradient(
+      150deg,
+      color-mix(in srgb, var(--h) var(--card-tint), var(--surface)) 0%,
+      var(--surface) 72%
+    );
+    box-shadow:
+      var(--shadow-card),
+      inset 0 0 0 0.5px color-mix(in srgb, var(--h) var(--card-edge), transparent);
+  }
+  .tone-card.hero {
+    --card-tint: var(--hero-tint);
+  }
+
+  /* Soft rounded square holding a tone-coloured glyph. */
+  .tone-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--h) var(--soft-mix), transparent);
+    color: var(--ht);
+  }
+
+  /* iOS-style app-icon tile: solid hue with light catching the top edge. */
+  .icon-tile {
+    background: linear-gradient(180deg, color-mix(in srgb, var(--h) 78%, #fff) 0%, var(--h) 100%);
+    box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.35);
+  }
+
+  /* Ambient colour wash behind a screen's title; tinted per section. */
+  .page-glow {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 440px;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        85% 75% at 12% -12%,
+        color-mix(in srgb, var(--glow) var(--glow-mix), transparent) 0%,
+        transparent 72%
+      ),
+      radial-gradient(
+        65% 60% at 100% -8%,
+        color-mix(in srgb, var(--glow-2, var(--glow)) var(--glow-mix-2), transparent) 0%,
+        transparent 70%
+      );
+    transition: opacity 300ms ease;
+  }
+
+  /* Primary filled button: subtle top light and a tinted shadow. */
+  .btn-filled {
+    background-color: var(--accent);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+    box-shadow: 0 6px 16px -8px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+
+  /* Re-points the surface tokens inside a sheet so grouped rows lift off the sheet. */
+  .sheet-scope {
+    --bg: var(--sheet-bg);
+    --surface: var(--sheet-surface);
   }
   .hairline-b {
     box-shadow: inset 0 -0.5px 0 var(--separator);

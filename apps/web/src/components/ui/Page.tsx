@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { hueVar, SECTION_HUE } from '../../lib/palette';
 import { Icon } from './Icon';
 
 interface PageProps {
@@ -15,6 +16,14 @@ interface PageProps {
   titleNode?: ReactNode;
   children: ReactNode;
   wide?: boolean;
+  /** Ambient colour behind the title. Defaults to the section's hue. */
+  tint?: string;
+}
+
+function useSectionTint(): string {
+  const { pathname } = useLocation();
+  const hit = SECTION_HUE.find(([prefix]) => pathname.startsWith(prefix));
+  return hueVar(hit?.[1] ?? 'blue');
 }
 
 export function Page({
@@ -26,7 +35,9 @@ export function Page({
   titleNode,
   children,
   wide,
+  tint,
 }: PageProps) {
+  const sectionTint = useSectionTint();
   const sentinel = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
@@ -49,7 +60,12 @@ export function Page({
   const showSmallTitle = !large || scrolled;
 
   return (
-    <div className="fade-in">
+    <div className="fade-in relative isolate">
+      <div
+        aria-hidden
+        className="page-glow"
+        style={{ '--glow': tint ?? sectionTint, '--glow-2': 'var(--accent)' } as CSSProperties}
+      />
       <header
         className={`fixed inset-x-0 top-0 z-30 transition-[background-color,box-shadow,backdrop-filter] duration-200 ${
           scrolled ? 'material-bar' : 'bg-transparent'

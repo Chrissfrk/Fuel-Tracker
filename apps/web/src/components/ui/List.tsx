@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { Icon, type IconName } from './Icon';
+import { toneStyle } from '../../lib/palette';
 
 /** Grouped, inset list section (iOS Settings style). */
 export function Section({
@@ -43,8 +44,8 @@ export function IconTile({
 }) {
   return (
     <span
-      className="flex shrink-0 items-center justify-center rounded-[8px] text-white"
-      style={{ background: color, width: size, height: size }}
+      className="icon-tile flex shrink-0 items-center justify-center rounded-[8px] text-white"
+      style={{ ...toneStyle(color), width: size, height: size }}
       aria-hidden
     >
       <Icon name={name} size={size * 0.62} strokeWidth={2.1} />

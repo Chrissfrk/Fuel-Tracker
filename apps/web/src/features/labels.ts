@@ -1,20 +1,21 @@
-import type { ExpenseCategory, FuelType } from '@fuel/shared';
+import { presetFor, type ExpenseCategory, type FuelType } from '@fuel/shared';
 import type { IconName } from '../components/ui/Icon';
+import { hueVar, TONE } from '../lib/palette';
 
 export const CATEGORY_META: Record<
   ExpenseCategory,
   { label: string; icon: IconName; color: string }
 > = {
-  service: { label: 'Service', icon: 'wrench', color: '#0a84ff' },
-  tires: { label: 'Tires', icon: 'tire', color: '#636366' },
-  insurance: { label: 'Insurance', icon: 'shield', color: '#30a14e' },
-  road_tax: { label: 'Road tax', icon: 'receipt', color: '#8e5bd8' },
-  kteo: { label: 'KTEO', icon: 'clipboard', color: '#0fa5a5' },
-  tolls: { label: 'Tolls', icon: 'road', color: '#f08c00' },
-  parking: { label: 'Parking', icon: 'parking', color: '#5e5ce6' },
-  wash: { label: 'Car wash', icon: 'droplet', color: '#32ade6' },
-  repair: { label: 'Repair', icon: 'hammer', color: '#e5484d' },
-  other: { label: 'Other', icon: 'ellipsis', color: '#8e8e93' },
+  service: { label: 'Service', icon: 'wrench', color: hueVar('blue') },
+  tires: { label: 'Tires', icon: 'tire', color: hueVar('brown') },
+  insurance: { label: 'Insurance', icon: 'shield', color: hueVar('green') },
+  road_tax: { label: 'Road tax', icon: 'receipt', color: hueVar('purple') },
+  kteo: { label: 'KTEO', icon: 'clipboard', color: hueVar('teal') },
+  tolls: { label: 'Tolls', icon: 'road', color: hueVar('pink') },
+  parking: { label: 'Parking', icon: 'parking', color: hueVar('indigo') },
+  wash: { label: 'Car wash', icon: 'droplet', color: hueVar('cyan') },
+  repair: { label: 'Repair', icon: 'hammer', color: hueVar('red') },
+  other: { label: 'Other', icon: 'ellipsis', color: hueVar('gray') },
 };
 
 export const FUEL_LABEL: Record<FuelType, string> = {
@@ -25,4 +26,12 @@ export const FUEL_LABEL: Record<FuelType, string> = {
   other: 'Other',
 };
 
-export const FUEL_COLOR = '#ff9f0a';
+export const FUEL_COLOR = hueVar(TONE.fuel);
+
+/** Icon tile for a reminder: its preset's expense category, or a bell for custom ones. */
+export function reminderIcon(type: string): { name: IconName; color: string } {
+  const p = presetFor(type);
+  if (!p) return { name: 'bell', color: hueVar(TONE.reminders) };
+  const m = CATEGORY_META[p.category];
+  return { name: m.icon, color: m.color };
+}

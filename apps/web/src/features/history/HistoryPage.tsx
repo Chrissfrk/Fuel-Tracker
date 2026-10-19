@@ -32,15 +32,16 @@ import {
 import { softDelete } from '../../data/mutations';
 import { syncNow } from '../../data/sync';
 import { carColor } from '../../lib/theme';
+import { hueVar, TONE } from '../../lib/palette';
 import { CATEGORY_META } from '../labels';
 import { RecordRowContent } from './RecordRow';
 
 type Kind = 'all' | HistoryItem['kind'];
 const KINDS = [
-  { value: 'all', label: 'All' },
-  { value: 'fillup', label: 'Fill-ups' },
-  { value: 'expense', label: 'Expenses' },
-  { value: 'odometer', label: 'Odometer' },
+  { value: 'all', label: 'All', color: 'var(--accent)' },
+  { value: 'fillup', label: 'Fill-ups', color: hueVar(TONE.fuel) },
+  { value: 'expense', label: 'Expenses', color: hueVar(TONE.cost) },
+  { value: 'odometer', label: 'Odometer', color: hueVar(TONE.odometer) },
 ] as const;
 
 const TABLE = { fillup: 'fillups', expense: 'expenses', odometer: 'odometerReadings' } as const;
@@ -139,6 +140,7 @@ export function HistoryPage() {
           {KINDS.map((k) => (
             <Chip
               key={k.value}
+              color={k.color}
               active={filters.kind === k.value}
               onClick={() => setFilters({ ...filters, kind: k.value })}
             >
@@ -151,6 +153,7 @@ export function HistoryPage() {
               return (
                 <Chip
                   key={c.id}
+                  color={carColor(c, i)}
                   active={on}
                   onClick={() =>
                     setFilters({
@@ -194,9 +197,14 @@ export function HistoryPage() {
             <section key={m.month} className="mt-6" aria-labelledby={`m-${m.month}`}>
               <h2 id={`m-${m.month}`} className="mb-1.5 flex items-baseline justify-between px-4">
                 <span className="text-headline">{formatMonth(m.month)}</span>
-                <span className="text-subhead text-label-2 tabular">{formatCurrency(m.total)}</span>
+                <span className="rounded-full bg-fill px-2 py-0.5 text-footnote font-semibold text-label-2 tabular">
+                  {formatCurrency(m.total)}
+                </span>
               </h2>
-              <div className="list-group overflow-hidden rounded-xl bg-surface">
+              <div
+                className="list-group overflow-hidden rounded-xl bg-surface"
+                style={{ boxShadow: 'var(--shadow-card)' }}
+              >
                 {m.items.map((item) => {
                   const car = cars.find((c) => c.id === item.record.carId);
                   return (

@@ -37,7 +37,8 @@ import {
 } from '../../data/hooks';
 import { ValidationError, newBase, saveRecord, softDelete } from '../../data/mutations';
 import { carColor } from '../../lib/theme';
-import { CATEGORY_META } from '../labels';
+import { hueVar } from '../../lib/palette';
+import { CATEGORY_META, reminderIcon } from '../labels';
 
 /** Reminder statuses for every car, from the estimated odometer and recent km/day. */
 function useStatuses() {
@@ -132,6 +133,7 @@ export function RemindersPage() {
                 key={s.reminder.id}
                 to={`/more/reminders/${s.reminder.id}`}
                 title={s.reminder.title}
+                icon={reminderIcon(s.reminder.type)}
                 subtitle={describeDue(s)}
                 trailing={<StatusBadge status={s.status} />}
               />
@@ -183,7 +185,7 @@ export function RemindersPage() {
         <Section>
           <Row
             title="Custom reminder"
-            icon={{ name: 'pencil', color: '#8e8e93' }}
+            icon={{ name: 'pencil', color: hueVar('indigo') }}
             onClick={() => {
               setPicker(false);
               navigate('/more/reminders/new');

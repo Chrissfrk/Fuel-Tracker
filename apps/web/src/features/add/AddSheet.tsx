@@ -1,7 +1,8 @@
 import { useCallback, useRef, useState } from 'react';
 import { Sheet } from '../../components/ui/Sheet';
 import { Button, Segmented } from '../../components/ui/Controls';
-import { Icon } from '../../components/ui/Icon';
+import { Icon, type IconName } from '../../components/ui/Icon';
+import { hueText, TONE, type Hue } from '../../lib/palette';
 import { toast } from '../../components/ui/Toast';
 import { EmptyState } from '../../components/ui/EmptyState';
 import {
@@ -21,10 +22,17 @@ import { OdometerForm } from './OdometerForm';
 import type { FormHandle, SaveResult } from './types';
 import { Link } from 'react-router';
 
+const modeLabel = (icon: IconName, hue: Hue, text: string) => (
+  <span className="inline-flex items-center justify-center gap-1.5">
+    <Icon name={icon} size={15} strokeWidth={2.3} style={{ color: hueText(hue) }} />
+    {text}
+  </span>
+);
+
 const MODES = [
-  { value: 'fillup', label: 'Fill-up' },
-  { value: 'expense', label: 'Expense' },
-  { value: 'odometer', label: 'Odometer' },
+  { value: 'fillup', label: modeLabel('fuel', TONE.fuel, 'Fill-up') },
+  { value: 'expense', label: modeLabel('receipt', TONE.cost, 'Expense') },
+  { value: 'odometer', label: modeLabel('gauge', TONE.odometer, 'Odometer') },
 ] as const;
 
 const TABLE = { fillup: 'fillups', expense: 'expenses', odometer: 'odometerReadings' } as const;
@@ -187,7 +195,7 @@ export function AddSheet() {
           className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
           aria-hidden
         >
-          <span className="pop-in flex h-24 w-24 items-center justify-center rounded-[28px] bg-elevated shadow-[0_10px_40px_rgba(0,0,0,0.2)]">
+          <span className="pop-in flex h-24 w-24 items-center justify-center rounded-[28px] bg-elevated shadow-[var(--shadow-pop)]">
             <svg
               width="52"
               height="52"

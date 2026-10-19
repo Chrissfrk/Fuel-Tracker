@@ -120,10 +120,10 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const styles = {
-    filled: 'bg-accent text-on-accent',
-    tinted: 'bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] text-accent-text',
+    filled: 'btn-filled text-on-accent',
+    tinted: 'bg-accent-soft text-accent-text',
     plain: 'text-accent-text',
-    destructive: 'bg-[color-mix(in_srgb,var(--red)_14%,transparent)] text-red-text',
+    destructive: 'bg-red-soft text-red-text',
   }[variant];
   return (
     <button
@@ -229,19 +229,30 @@ export function Chip({
   active,
   onClick,
   children,
+  color = 'var(--accent)',
 }: {
   active?: boolean;
   onClick: () => void;
   children: ReactNode;
+  /** Identity colour shown when selected (defaults to the accent). Text stays in label colour. */
+  color?: string;
 }) {
   return (
     <button
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`pressable inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-subhead font-medium ${
-        active ? 'bg-accent text-on-accent' : 'bg-surface text-label'
+      className={`pressable inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-full px-3.5 text-subhead transition-[background-color,box-shadow] duration-150 ${
+        active ? 'font-semibold text-label' : 'bg-surface font-medium text-label'
       }`}
+      style={
+        active
+          ? {
+              background: `color-mix(in srgb, ${color} 20%, var(--surface))`,
+              boxShadow: `inset 0 0 0 1.5px ${color}`,
+            }
+          : { boxShadow: 'var(--shadow-card)' }
+      }
     >
       {children}
     </button>

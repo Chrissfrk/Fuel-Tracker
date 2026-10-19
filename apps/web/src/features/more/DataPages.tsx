@@ -22,6 +22,7 @@ import { api, errorMessage } from '../../data/api';
 import { newBase, saveRecord } from '../../data/mutations';
 import { syncNow } from '../../data/sync';
 import { carColor } from '../../lib/theme';
+import { hueVar } from '../../lib/palette';
 
 async function download(url: string, fallbackName: string) {
   const blob = await api<Blob>(url, { timeoutMs: 60_000 });
@@ -107,7 +108,7 @@ export function DataPage() {
         </FieldRow>
         <Row
           title="Download CSV (zip)"
-          icon={{ name: 'download', color: '#30a14e' }}
+          icon={{ name: 'download', color: hueVar('green') }}
           chevron={false}
           trailing={
             busy === 'csv' ? <span className="text-footnote text-label-2">Preparing…</span> : null
@@ -118,7 +119,7 @@ export function DataPage() {
         />
         <Row
           title="Download JSON backup"
-          icon={{ name: 'download', color: '#0a84ff' }}
+          icon={{ name: 'download', color: hueVar('blue') }}
           chevron={false}
           trailing={
             busy === 'json' ? <span className="text-footnote text-label-2">Preparing…</span> : null
@@ -133,14 +134,14 @@ export function DataPage() {
         <Row
           title="Paste past fill-ups"
           subtitle="From a spreadsheet or notes"
-          icon={{ name: 'paste', color: '#8e5bd8' }}
+          icon={{ name: 'paste', color: hueVar('purple') }}
           onClick={() => navigate('/more/paste')}
         />
         {isAdmin(me) && (
           <Row
             title="Restore JSON backup"
             subtitle="Merges with what's here; newer changes win"
-            icon={{ name: 'upload', color: '#ff9f0a' }}
+            icon={{ name: 'upload', color: hueVar('orange') }}
             chevron={false}
             trailing={
               busy === 'import' ? (

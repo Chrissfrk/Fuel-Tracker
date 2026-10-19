@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { promptInstall, useInstallMode } from '../../lib/install';
 import { Icon } from '../../components/ui/Icon';
 import { Button } from '../../components/ui/Controls';
+import { hueStyle } from '../../lib/palette';
 
 const KEY = 'fuel:installDismissed';
 
@@ -26,11 +27,18 @@ export function InstallBanner() {
   };
   return (
     <div
-      className="mt-3 flex items-start gap-3 rounded-2xl bg-surface p-4"
+      className="tone-card hero mt-3 flex items-start gap-3 rounded-2xl p-4"
+      style={hueStyle('blue')}
       role="region"
       aria-label="Install the app"
     >
-      <img src="/pwa-64x64.png" alt="" width={44} height={44} className="rounded-[10px]" />
+      <img
+        src="/pwa-64x64.png"
+        alt=""
+        width={44}
+        height={44}
+        className="rounded-[10px] shadow-[0_4px_12px_-4px_rgba(0,60,160,0.45)]"
+      />
       <div className="min-w-0 flex-1">
         <p className="text-headline">Add Fuel to your Home Screen</p>
         {mode === 'ios' ? (

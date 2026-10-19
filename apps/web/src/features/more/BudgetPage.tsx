@@ -20,6 +20,9 @@ import { isAdmin, useMe } from '../../app/context';
 import { useBudgets, useCars, useExpenses, useFillups } from '../../data/hooks';
 import { newBase, saveRecord, softDelete } from '../../data/mutations';
 import { carColor } from '../../lib/theme';
+import { toneStyle } from '../../lib/palette';
+
+const STATUS_COLOR = { ok: 'var(--green)', warning: 'var(--orange)', over: 'var(--red)' } as const;
 
 export function BudgetPage() {
   const me = useMe();
@@ -107,9 +110,16 @@ export function BudgetPage() {
           return (
             <div
               key={t.carId ?? 'h'}
-              className="flex flex-col items-center rounded-2xl bg-surface p-4 text-center"
+              className="tone-card flex flex-col items-center rounded-2xl p-4 text-center"
+              style={toneStyle(p ? STATUS_COLOR[p.status] : 'var(--gray)')}
             >
-              <Ring ratio={p?.ratio ?? 0} status={p?.status ?? 'ok'} size={84} stroke={10}>
+              <Ring
+                ratio={p?.ratio ?? 0}
+                status={p?.status ?? 'ok'}
+                size={84}
+                stroke={10}
+                track={p ? undefined : 'var(--fill)'}
+              >
                 <span className="text-subhead font-semibold tabular">
                   {p ? `${Math.round(p.ratio * 100)}%` : '–'}
                 </span>

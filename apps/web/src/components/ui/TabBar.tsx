@@ -16,13 +16,23 @@ export function TabBar({ onAdd }: { onAdd: () => void }) {
       to={t.to}
       end={t.end}
       className={({ isActive }) =>
-        `pressable flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 ${
-          isActive ? 'text-accent' : 'text-label-2'
+        `pressable flex min-h-12 flex-1 items-center justify-center ${
+          isActive ? 'text-accent-text' : 'text-label-2'
         }`
       }
     >
-      <Icon name={t.icon} size={25} strokeWidth={1.9} />
-      <span className="text-caption-2 font-medium">{t.label}</span>
+      {({ isActive }) => (
+        <span
+          className={`flex min-w-16 flex-col items-center gap-0.5 rounded-full px-3 py-[3px] transition-colors duration-200 ${
+            isActive ? 'bg-accent-soft' : ''
+          }`}
+        >
+          <Icon name={t.icon} size={24} strokeWidth={isActive ? 2.2 : 1.9} />
+          <span className={`text-caption-2 ${isActive ? 'font-semibold' : 'font-medium'}`}>
+            {t.label}
+          </span>
+        </span>
+      )}
     </NavLink>
   );
   return (
@@ -45,7 +55,11 @@ export function TabBar({ onAdd }: { onAdd: () => void }) {
               haptic();
               onAdd();
             }}
-            className="pressable flex h-11 w-14 items-center justify-center rounded-full bg-accent text-on-accent shadow-[0_4px_14px_color-mix(in_srgb,var(--accent)_40%,transparent)]"
+            className="pressable flex h-11 w-14 items-center justify-center rounded-full text-on-accent shadow-[0_6px_18px_-4px_color-mix(in_srgb,var(--accent)_60%,transparent)]"
+            style={{
+              background:
+                'linear-gradient(135deg, color-mix(in srgb, var(--accent) 70%, var(--cyan)) 0%, var(--accent) 50%, color-mix(in srgb, var(--accent) 65%, var(--indigo)) 100%)',
+            }}
           >
             <Icon name="plus" size={26} strokeWidth={2.6} />
           </button>

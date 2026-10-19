@@ -102,7 +102,7 @@ export function CarSwitcher({
           ref={menu}
           role="menu"
           aria-label="Choose car"
-          className="pop-in absolute top-full left-0 z-40 mt-2 w-72 max-w-[calc(100vw-32px)] origin-top-left overflow-hidden rounded-2xl bg-elevated shadow-[0_10px_40px_rgba(0,0,0,0.22)]"
+          className="pop-in absolute top-full left-0 z-40 mt-2 w-72 max-w-[calc(100vw-32px)] origin-top-left overflow-hidden rounded-2xl bg-elevated shadow-[var(--shadow-pop)]"
         >
           {options.map((o, i) => (
             <button

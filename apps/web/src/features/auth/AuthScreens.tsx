@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react';
+import { useState, type CSSProperties, type FormEvent, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { errorMessage } from '../../data/api';
 import { SESSION_QUERY, login, setup } from '../../data/session';
@@ -15,24 +15,37 @@ function AuthLayout({
   children: ReactNode;
 }) {
   return (
-    <main
-      className="fade-in mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4"
-      style={{
-        paddingTop: 'calc(env(safe-area-inset-top) + 24px)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)',
-      }}
-    >
-      <img
-        src="/pwa-192x192.png"
-        alt=""
-        width={76}
-        height={76}
-        className="mx-auto rounded-[18px] shadow-md"
+    <div className="relative isolate min-h-dvh overflow-hidden">
+      <div
+        aria-hidden
+        className="page-glow"
+        style={
+          {
+            '--glow': 'var(--accent)',
+            '--glow-2': 'var(--indigo)',
+            height: '70dvh',
+          } as CSSProperties
+        }
       />
-      <h1 className="mt-5 text-center text-large-title">{title}</h1>
-      <p className="mt-1.5 text-center text-callout text-label-2">{subtitle}</p>
-      {children}
-    </main>
+      <main
+        className="fade-in mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4"
+        style={{
+          paddingTop: 'calc(env(safe-area-inset-top) + 24px)',
+          paddingBottom: 'calc(env(safe-area-inset-bottom) + 24px)',
+        }}
+      >
+        <img
+          src="/pwa-192x192.png"
+          alt=""
+          width={76}
+          height={76}
+          className="mx-auto rounded-[18px] shadow-[0_12px_32px_-10px_color-mix(in_srgb,var(--accent)_70%,transparent)]"
+        />
+        <h1 className="mt-5 text-center text-large-title">{title}</h1>
+        <p className="mt-1.5 text-center text-callout text-label-2">{subtitle}</p>
+        {children}
+      </main>
+    </div>
   );
 }
 

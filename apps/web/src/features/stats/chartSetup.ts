@@ -13,6 +13,7 @@ import {
   PointElement,
   Tooltip,
   type Plugin,
+  type ScriptableContext,
 } from 'chart.js';
 import { useMemo } from 'react';
 import { cssVar, seriesColor, SERIES_LIGHT, useIsDark } from '../../lib/theme';
@@ -44,6 +45,38 @@ export interface ChartTheme {
   slot: (i: number) => string;
   /** A car's identity colour in the current mode. */
   car: (hex: string) => string;
+  /** Colour for a measure when the chart shows one car (matches the UI tones). */
+  metric: (m: Metric) => string;
+}
+
+/**
+ * Measure → categorical slot. Mirrors TONE in lib/palette.ts (fuel orange, distance blue,
+ * economy green-teal, price purple, cost pink) using the validated chart steps.
+ */
+const METRIC_SLOT = { distance: 0, fuel: 1, economy: 2, cost: 4, price: 6 } as const;
+export type Metric = keyof typeof METRIC_SLOT;
+
+/** Stacked spending series: fuel first (orange), then the expense groups. */
+export const SPEND_SLOTS = [1, 0, 2, 3, 4] as const;
+
+export const withAlpha = (hex: string, a: number) =>
+  /^#[0-9a-f]{6}$/i.test(hex)
+    ? hex +
+      Math.round(a * 255)
+        .toString(16)
+        .padStart(2, '0')
+    : hex;
+
+/** Vertical wash under a line, fading to transparent at the baseline. */
+export function areaFill(color: string, strength: number) {
+  return (ctx: ScriptableContext<'line'>) => {
+    const area = ctx.chart.chartArea;
+    if (!area) return 'transparent';
+    const g = ctx.chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+    g.addColorStop(0, withAlpha(color, strength));
+    g.addColorStop(1, withAlpha(color, 0));
+    return g;
+  };
 }
 
 /** Theme colours read from CSS variables; recomputed when light/dark changes. */
@@ -58,9 +91,10 @@ export function useChartTheme(): ChartTheme {
       text2: cssVar('--label-2'),
       grid: cssVar('--grid'),
       surface: cssVar('--surface'),
-      tooltipBg: dark ? 'rgba(58,58,60,0.97)' : 'rgba(255,255,255,0.98)',
+      tooltipBg: dark ? 'rgba(46,52,66,0.97)' : 'rgba(255,255,255,0.98)',
       slot: (i: number) => seriesColor(SERIES_LIGHT[i % SERIES_LIGHT.length]!, dark),
       car: (hex: string) => seriesColor(hex, dark),
+      metric: (m: Metric) => seriesColor(SERIES_LIGHT[METRIC_SLOT[m]]!, dark),
     };
   }, [dark]);
 }
@@ -93,6 +127,14 @@ export function baseOptions(t: ChartTheme, opts: { legend?: boolean } = {}): Loo
           boxHeight: 8,
           padding: 14,
           font: { family: FONT, size: 12 },
+          // A filled line's legend swatch uses its line colour, not the faded area gradient.
+          generateLabels: (chart: Chart) =>
+            Chart.defaults.plugins.legend.labels.generateLabels(chart).map((l) => {
+              const ds = chart.data.datasets[l.datasetIndex ?? -1] as
+                { fill?: unknown; borderColor?: unknown } | undefined;
+              if (ds?.fill && typeof ds.borderColor === 'string') l.fillStyle = ds.borderColor;
+              return l;
+            }),
         },
       },
       tooltip: {

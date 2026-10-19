@@ -11,6 +11,7 @@ import {
   useReminders,
 } from '../../data/hooks';
 import { promptInstall, useInstallMode } from '../../lib/install';
+import { hueVar } from '../../lib/palette';
 
 function useAttentionCount() {
   const cars = useCars();
@@ -45,11 +46,11 @@ export function MorePage() {
   return (
     <Page title="More" large>
       <Section>
-        <Row to="/more/cars" title="Cars" icon={{ name: 'car', color: '#0a84ff' }} />
+        <Row to="/more/cars" title="Cars" icon={{ name: 'car', color: hueVar('blue') }} />
         <Row
           to="/more/reminders"
           title="Reminders"
-          icon={{ name: 'bell', color: '#ff9f0a' }}
+          icon={{ name: 'bell', color: hueVar('orange') }}
           value={
             attention > 0 ? (
               <span
@@ -61,27 +62,35 @@ export function MorePage() {
             ) : undefined
           }
         />
-        <Row to="/more/budget" title="Budget" icon={{ name: 'wallet', color: '#30a14e' }} />
+        <Row to="/more/budget" title="Budget" icon={{ name: 'wallet', color: hueVar('green') }} />
       </Section>
       <Section>
-        <Row to="/more/data" title="Export & import" icon={{ name: 'share', color: '#5e5ce6' }} />
+        <Row
+          to="/more/data"
+          title="Export & import"
+          icon={{ name: 'share', color: hueVar('indigo') }}
+        />
         <Row
           to="/more/paste"
           title="Import past fill-ups"
-          icon={{ name: 'paste', color: '#8e5bd8' }}
+          icon={{ name: 'paste', color: hueVar('purple') }}
         />
       </Section>
       {isAdmin(me) && (
         <Section>
-          <Row to="/more/users" title="Family members" icon={{ name: 'users', color: '#ff375f' }} />
+          <Row
+            to="/more/users"
+            title="Family members"
+            icon={{ name: 'users', color: hueVar('pink') }}
+          />
         </Section>
       )}
       <Section>
-        <Row to="/more/settings" title="Settings" icon={{ name: 'gear', color: '#8e8e93' }} />
+        <Row to="/more/settings" title="Settings" icon={{ name: 'gear', color: hueVar('gray') }} />
         {install === 'prompt' && (
           <Row
             title="Install app"
-            icon={{ name: 'download', color: '#0a84ff' }}
+            icon={{ name: 'download', color: hueVar('cyan') }}
             onClick={() => void promptInstall()}
             chevron={false}
           />

@@ -28,7 +28,7 @@ export function SyncIndicator() {
 
   let icon: React.ReactNode;
   let text: string;
-  let tone = 'text-label-2';
+  let tone: string;
   if (offline) {
     icon = <Icon name="cloudOff" size={16} />;
     text = pending ? `Offline · ${pending} waiting` : 'Offline';
@@ -36,6 +36,7 @@ export function SyncIndicator() {
   } else if (status.state === 'syncing') {
     icon = <Spinner size={14} />;
     text = pending ? `Syncing ${pending}…` : 'Syncing…';
+    tone = 'text-accent-text';
   } else if (pending > 0) {
     icon = <Icon name="cloudArrow" size={16} />;
     text = `${pending} ${pending === 1 ? 'change' : 'changes'} waiting to sync`;
@@ -47,6 +48,7 @@ export function SyncIndicator() {
   } else {
     icon = <Icon name="cloudCheck" size={16} />;
     text = 'Synced';
+    tone = 'text-green-text';
   }
 
   return (

@@ -5,7 +5,8 @@ import {
   type Delta as DeltaT,
   type ReminderState,
 } from '@fuel/shared';
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
+import { hueStyle, toneStyle, type Hue } from '../../lib/palette';
 
 /** ▲/▼ with %; green when the change is good, red when bad, gray when neutral. */
 export function Delta({ d, suffix, compact }: { d: DeltaT; suffix?: string; compact?: boolean }) {
@@ -36,29 +37,34 @@ export function StatCard({
   sub,
   delta,
   icon,
-  tint,
+  tone,
+  hero,
 }: {
   label: string;
   value: ReactNode;
   sub?: ReactNode;
   delta?: ReactNode;
-  icon?: ReactNode;
-  tint?: string;
+  icon?: IconName;
+  /** Hue that identifies what the card measures (see TONE). */
+  tone?: Hue;
+  /** Stronger tint for the screen's headline figure. */
+  hero?: boolean;
 }) {
   return (
     <div
-      className="flex min-h-[104px] flex-col rounded-2xl bg-surface p-3.5"
-      style={{ boxShadow: 'var(--shadow-card)' }}
+      className={`tone-card flex min-h-[104px] flex-col rounded-2xl p-3.5 ${hero ? 'hero' : ''}`}
+      style={tone ? hueStyle(tone) : toneStyle('var(--label-3)', 'var(--label-2)')}
     >
-      <div
-        className="flex items-center gap-1.5 text-subhead font-medium"
-        style={{ color: tint ?? 'var(--label-2)' }}
-      >
-        {icon}
+      <div className="flex items-center gap-2 text-subhead font-medium text-label-2">
+        {icon && (
+          <span className="tone-icon h-[26px] w-[26px]">
+            <Icon name={icon} size={16} strokeWidth={2.1} />
+          </span>
+        )}
         <span className="truncate">{label}</span>
       </div>
       <div className="mt-auto pt-2">
-        <div className="truncate text-title-2 tabular">{value}</div>
+        <div className={`truncate tabular ${hero ? 'text-title-1' : 'text-title-2'}`}>{value}</div>
         {(sub || delta) && (
           <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-footnote text-label-2">
             {delta}
@@ -81,12 +87,15 @@ export function Ring({
   status,
   size = 96,
   stroke = 11,
+  track,
   children,
 }: {
   ratio: number;
   status: BudgetStatus;
   size?: number;
   stroke?: number;
+  /** Track colour; defaults to a soft tint of the status colour. */
+  track?: string;
   children?: ReactNode;
 }) {
   const r = (size - stroke) / 2;
@@ -100,7 +109,7 @@ export function Ring({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--fill)"
+          stroke={track ?? `color-mix(in srgb, ${ringColor[status]} var(--soft-mix), var(--fill))`}
           strokeWidth={stroke}
         />
         <circle
@@ -134,17 +143,17 @@ const statusStyle: Record<
 > = {
   overdue: {
     label: 'Overdue',
-    cls: 'text-red-text bg-[color-mix(in_srgb,var(--red)_14%,transparent)]',
+    cls: 'text-red-text bg-red-soft',
     icon: 'warning',
   },
   due_soon: {
     label: 'Due soon',
-    cls: 'text-orange-text bg-[color-mix(in_srgb,var(--orange)_16%,transparent)]',
+    cls: 'text-orange-text bg-orange-soft',
     icon: 'calendar',
   },
   ok: {
     label: 'OK',
-    cls: 'text-green-text bg-[color-mix(in_srgb,var(--green)_14%,transparent)]',
+    cls: 'text-green-text bg-green-soft',
     icon: 'check',
   },
 };

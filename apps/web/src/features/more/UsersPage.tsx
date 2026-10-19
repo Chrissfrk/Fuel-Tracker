@@ -11,6 +11,7 @@ import { toast } from '../../components/ui/Toast';
 import { useMe } from '../../app/context';
 import { api, errorMessage } from '../../data/api';
 import { syncNow } from '../../data/sync';
+import { avatarHue, hueVar, toneStyle } from '../../lib/palette';
 
 const ROLE_OPTIONS = [
   { value: 'member', label: 'Member' },
@@ -61,7 +62,8 @@ export function UsersPage() {
               subtitle={`@${u.username} · ${u.role === 'admin' ? 'Admin' : 'Member'}${u.active ? '' : ' · Deactivated'}`}
               leading={
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full text-headline text-white ${u.active ? 'bg-accent' : 'bg-label-3'}`}
+                  className="icon-tile flex h-9 w-9 items-center justify-center rounded-full text-headline text-white"
+                  style={toneStyle(u.active ? hueVar(avatarHue(u.id)) : 'var(--gray)')}
                   aria-hidden
                 >
                   {u.displayName.slice(0, 1).toUpperCase()}

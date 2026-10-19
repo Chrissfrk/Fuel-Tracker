@@ -34,7 +34,9 @@ import { softDelete } from '../../data/mutations';
 import { useDashboard } from './useDashboard';
 import { RecordRowContent } from '../history/RecordRow';
 import { InstallBanner } from './InstallBanner';
-import { FUEL_COLOR } from '../labels';
+import { reminderIcon } from '../labels';
+import { hueStyle, hueVar, TONE } from '../../lib/palette';
+import { carColor } from '../../lib/theme';
 
 export function HomePage() {
   const me = useMe();
@@ -87,6 +89,11 @@ export function HomePage() {
         title={isAll ? 'All cars' : (selectedCars[0]?.name ?? 'Home')}
         large
         wide
+        tint={
+          isAll || !selectedCars[0]
+            ? 'var(--accent)'
+            : carColor(selectedCars[0], cars.indexOf(selectedCars[0]))
+        }
         titleNode={<CarSwitcher cars={cars} value={selection!} onChange={setSelection} />}
         accessory={
           <div className="-ml-2 mt-0.5">
@@ -110,8 +117,9 @@ export function HomePage() {
                 <div className="col-span-2 sm:col-span-1">
                   <StatCard
                     label="Fuel this month"
-                    icon={<Icon name="fuel" size={17} />}
-                    tint={FUEL_COLOR}
+                    icon="fuel"
+                    tone={TONE.fuel}
+                    hero
                     value={formatCurrency(d.current.fuelCost)}
                     delta={<Delta d={c.fuelCost.vsLastMonth} suffix="vs last month" />}
                     sub={
@@ -123,20 +131,23 @@ export function HomePage() {
                 </div>
                 <StatCard
                   label="Km this month"
-                  icon={<Icon name="road" size={17} />}
+                  icon="road"
+                  tone={TONE.distance}
                   value={formatKm(d.current.km)}
                   delta={<Delta d={c.km.vsLastMonth} compact />}
                 />
                 <StatCard
                   label="Economy"
-                  icon={<Icon name="gauge" size={17} />}
+                  icon="gauge"
+                  tone={TONE.economy}
                   value={formatL100(d.l100)}
                   delta={!d.l100IsAllTime ? <Delta d={c.l100.vs3MonthAvg} compact /> : undefined}
                   sub={d.l100IsAllTime ? 'all-time' : 'vs 3-mo avg'}
                 />
                 <StatCard
                   label="Avg price"
-                  icon={<Icon name="euro" size={17} />}
+                  icon="euro"
+                  tone={TONE.price}
                   value={formatPricePerLiter(d.pricePerLiter)}
                   delta={
                     !d.priceIsAllTime ? (
@@ -147,7 +158,8 @@ export function HomePage() {
                 />
                 <StatCard
                   label="True cost / km"
-                  icon={<Icon name="wallet" size={17} />}
+                  icon="wallet"
+                  tone={TONE.cost}
                   value={formatCostPerKm(d.current.trueCostPerKm)}
                   sub="fuel + expenses"
                 />
@@ -163,8 +175,12 @@ export function HomePage() {
                       <span className="text-caption-2 text-label-2">of budget</span>
                     </Ring>
                   ) : (
-                    <Ring ratio={0} status="ok">
-                      <Icon name="wallet" size={26} className="text-label-3" />
+                    <Ring
+                      ratio={0}
+                      status="ok"
+                      track={`color-mix(in srgb, ${hueVar(TONE.cost)} var(--soft-mix), transparent)`}
+                    >
+                      <Icon name="wallet" size={26} className="text-pink-text" />
                     </Ring>
                   )}
                   <div className="min-w-0 flex-1">
@@ -210,16 +226,21 @@ export function HomePage() {
                     )}
                   </div>
                 </div>
-                <div className="row-inner ml-4 py-3 pr-4 text-subhead">
-                  <span className="text-label-2">At this pace: </span>
-                  <span className="font-semibold tabular">
-                    ~{formatCurrency(d.projection.projected, { whole: true })}
+                <div className="row-inner ml-4 flex items-start gap-2.5 py-3 pr-4 text-subhead">
+                  <span className="tone-icon mt-px h-6 w-6" style={hueStyle(TONE.price)}>
+                    <Icon name="sparkle" size={14} strokeWidth={2.2} />
                   </span>
-                  <span className="text-label-2"> this month · </span>
-                  <span className="font-semibold tabular">
-                    ~{formatCurrency(d.yearProjection.projected, { whole: true })}
-                  </span>
-                  <span className="text-label-2"> this year</span>
+                  <p className="min-w-0 flex-1">
+                    <span className="text-label-2">At this pace: </span>
+                    <span className="font-semibold tabular">
+                      ~{formatCurrency(d.projection.projected, { whole: true })}
+                    </span>
+                    <span className="text-label-2"> this month · </span>
+                    <span className="font-semibold tabular">
+                      ~{formatCurrency(d.yearProjection.projected, { whole: true })}
+                    </span>
+                    <span className="text-label-2"> this year</span>
+                  </p>
                 </div>
               </Section>
             </div>
@@ -232,6 +253,7 @@ export function HomePage() {
                       key={r.reminder.id}
                       to={`/more/reminders/${r.reminder.id}`}
                       title={r.reminder.title}
+                      icon={reminderIcon(r.reminder.type)}
                       subtitle={reminderSubtitle(
                         r,
                         isAll ? cars.find((x) => x.id === r.reminder.carId)?.name : undefined,
@@ -258,7 +280,7 @@ export function HomePage() {
                         ? 'Estimated from trip km since the start'
                         : `Last real reading ${formatDate(d.odometer.base.date)}`
                     }
-                    icon={{ name: 'gauge', color: '#8e8e93' }}
+                    icon={{ name: 'gauge', color: hueVar(TONE.odometer) }}
                     trailing={<span className="text-subhead text-accent-text">Update</span>}
                     chevron={false}
                     onClick={() => addSheet.open('odometer')}

@@ -200,7 +200,7 @@ export function Sheet({ open, onClose, label, header, children, canDismiss }: Sh
         role="dialog"
         aria-modal="true"
         aria-label={label}
-        className="absolute inset-x-0 bottom-0 mx-auto flex max-w-2xl flex-col rounded-t-[14px] bg-bg will-change-transform"
+        className="sheet-scope absolute inset-x-0 bottom-0 mx-auto flex max-w-2xl flex-col rounded-t-[14px] bg-bg will-change-transform"
         style={{
           maxHeight: 'calc(100dvh - env(safe-area-inset-top) - 10px)',
           height: 'calc(100dvh - env(safe-area-inset-top) - 10px)',

@@ -12,6 +12,7 @@ import { IconTile } from '../../components/ui/List';
 import { Icon } from '../../components/ui/Icon';
 import { CATEGORY_META, FUEL_COLOR } from '../labels';
 import { carColor } from '../../lib/theme';
+import { hueVar, TONE } from '../../lib/palette';
 
 /** One fill-up / expense / odometer reading, with key numbers and who logged it. */
 export function RecordRowContent({
@@ -44,7 +45,7 @@ export function RecordRowContent({
     details = [e.note ?? '', e.odometerKm != null ? formatKm(e.odometerKm) : ''].filter(Boolean);
   } else {
     const r = item.record;
-    icon = <IconTile name="gauge" color="#8e8e93" size={36} />;
+    icon = <IconTile name="gauge" color={hueVar(TONE.odometer)} size={36} />;
     title = 'Odometer reading';
     amount = formatKm(r.odometerKm);
     details = [];
