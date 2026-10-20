@@ -119,6 +119,23 @@ Open `http://<server>:3000` and create the admin account. That's it.
 - To load the demo data into the container (only on an empty database):
   `docker compose exec app node apps/server/dist/seed.js`
 
+### Portainer
+
+Use [portainer-stack.yml](portainer-stack.yml). It reads its settings from Portainer's
+environment variables, so there is no `.env` file.
+
+1. **Stacks → Add stack**, give it a name (e.g. `fuel-tracker`) and choose **Repository**.
+2. Repository URL `https://github.com/Chrissfrk/Fuel-Tracker`, reference `refs/heads/master`,
+   compose path `portainer-stack.yml`. For a private repo, turn on **Authentication** and use your
+   GitHub username with a personal access token that can read the repo.
+3. Under **Environment variables** add `SESSION_SECRET` (`openssl rand -base64 48`). Optional:
+   `HOST_PORT` (default `3000`), `TZ`, `COOKIE_SECURE`.
+4. **Deploy the stack.** The first build takes a few minutes. Then open `http://<server>:3000`.
+
+The data lives in the volume `fuel-tracker-data`. To update, open the stack and click **Pull and
+redeploy**. Behind a reverse proxy such as Nginx Proxy Manager, leave `COOKIE_SECURE=auto` and make
+sure the proxy sends `X-Forwarded-Proto`.
+
 ### Environment variables
 
 | Variable         | Default         | Meaning                                                                                                    |

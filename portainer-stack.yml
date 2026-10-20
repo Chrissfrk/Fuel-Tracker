@@ -1,0 +1,42 @@
+# Portainer stack for Fuel Tracker.
+#
+# Deploy in Portainer: Stacks → Add stack → Repository
+#   Repository URL:      https://github.com/Chrissfrk/Fuel-Tracker
+#   Repository reference: refs/heads/master
+#   Compose path:        portainer-stack.yml
+#   Authentication:      on for a private repo (GitHub username + a personal access token)
+#   Environment variables: at least SESSION_SECRET (see below)
+#
+# Portainer clones the repo and builds the image on the server, so the first deploy takes a few
+# minutes. To update later: open the stack → "Pull and redeploy".
+#
+# Environment variables (set them in the stack's "Environment variables" section):
+#   SESSION_SECRET  required, at least 32 characters:  openssl rand -base64 48
+#   HOST_PORT       port on the server, default 3000
+#   TZ              default Europe/Athens
+#   COOKIE_SECURE   auto (default) | true | false
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        APP_VERSION: ${APP_VERSION:-1.0.0}
+    image: fuel-tracker:latest
+    container_name: fuel-tracker
+    restart: unless-stopped
+    environment:
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET in the stack's environment variables}
+      TZ: ${TZ:-Europe/Athens}
+      COOKIE_SECURE: ${COOKIE_SECURE:-auto}
+      DATA_DIR: /data
+      PORT: 3000
+    ports:
+      - '${HOST_PORT:-3000}:3000'
+    volumes:
+      - fuel-data:/data
+
+volumes:
+  fuel-data:
+    # Fixed name so it's easy to find in Portainer → Volumes, whatever the stack is called.
+    name: fuel-tracker-data
